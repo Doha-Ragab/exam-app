@@ -1,0 +1,271 @@
+<div class="flex w-full max-w-[452px] flex-col">
+  @if (step() === 'email') {
+    <div class="flex flex-col gap-4">
+      <h2 class="text-[28px] font-bold tracking-tight text-slate-900">Create Account</h2>
+
+      <app-inputs
+        label="Email"
+        type="email"
+        placeholder="user@example.com"
+        [formControl]="emailControl"
+        [errorMessage]="
+          emailControl.touched && emailControl.invalid ? 'Please enter a valid email address' : ''
+        "
+      />
+
+      <button
+        type="button"
+        [disabled]="emailControl.invalid"
+        (click)="goToOtp()"
+        class="mt-1 flex h-[44px] w-full cursor-pointer items-center justify-center gap-1 rounded-md border border-blue-200 bg-blue-50/70 text-sm font-semibold text-blue-600 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+      >
+        <span>Next</span>
+        <span aria-hidden="true">&gt;</span>
+      </button>
+
+      <p class="mt-2 text-center text-xs text-slate-500">
+        Already have an account?
+        <a routerLink="/auth/login" class="font-semibold text-blue-600 hover:underline">
+          Login
+        </a>
+      </p>
+    </div>
+  } @else if (step() === 'otp') {
+    <div class="flex flex-col">
+      <!-- شريط التقدم (الخطوة 2) -->
+      <div class="mb-6 flex items-center" aria-hidden="true">
+        <span class="h-2 w-2 rotate-45 bg-blue-600"></span>
+        <div class="h-[1.5px] flex-1 bg-blue-600"></div>
+        <span class="h-2.5 w-2.5 rotate-45 border-2 border-blue-600 bg-white"></span>
+        <div class="h-[1.5px] flex-1 border-t border-dashed border-blue-300"></div>
+        <span class="h-2 w-2 rotate-45 border border-blue-300 bg-white"></span>
+        <div class="h-[1.5px] flex-1 border-t border-dashed border-blue-300"></div>
+        <span class="h-2 w-2 rotate-45 border border-blue-300 bg-white"></span>
+      </div>
+
+      <h2 class="text-[28px] font-bold tracking-tight text-slate-900">Create Account</h2>
+      <h3 class="mt-2 text-lg font-bold text-blue-600">Verify OTP</h3>
+
+      <p class="mt-1.5 text-xs leading-relaxed text-slate-500">
+        Please enter the 6-digit code we have sent to:
+        <strong class="font-semibold text-slate-800">{{ emailControl.value }}</strong>
+        <button
+          type="button"
+          (click)="editEmail()"
+          class="ms-1 cursor-pointer font-semibold text-blue-600 hover:underline"
+        >
+          Edit
+        </button>
+      </p>
+
+      <div class="my-6 flex items-center justify-between gap-2">
+        @for (box of otpBoxes; track box; let i = $index) {
+          <input
+            #otpInput
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="1"
+            [value]="otpValues()[i]"
+            (input)="onOtpInput($event, i)"
+            (keydown)="onOtpKeydown($event, i)"
+            (paste)="onOtpPaste($event)"
+            [class]="
+              otpValues()[i]
+                ? 'h-12 w-11 rounded-md border-[1.5px] border-blue-600 bg-blue-50/30 text-center text-sm font-semibold text-blue-600 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20'
+                : 'h-12 w-11 rounded-md border border-slate-200 bg-slate-50/70 text-center text-sm font-semibold text-slate-400 focus:border-blue-600 focus:bg-white focus:text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/20'
+            "
+          />
+        }
+      </div>
+
+      <p class="text-center text-xs text-slate-400">
+        @if (countdown() > 0) {
+          <span>
+            You can request another code in:
+            <strong class="font-medium text-slate-500">{{ countdown() }}s</strong>
+          </span>
+        } @else {
+          <button
+            type="button"
+            (click)="resendCode()"
+            class="cursor-pointer font-semibold text-blue-600 hover:underline"
+          >
+            Resend code
+          </button>
+        }
+      </p>
+
+      <button
+        type="button"
+        [disabled]="!isOtpComplete()"
+        (click)="verifyOtp()"
+        class="mt-5 flex h-[44px] w-full cursor-pointer items-center justify-center rounded-md border border-blue-200 bg-blue-50/80 text-sm font-semibold text-blue-600 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+      >
+        Verify Code
+      </button>
+    </div>
+  } @else if (step() === 'user-info') {
+    <form [formGroup]="userInfoForm" (ngSubmit)="goToPassword()" class="flex flex-col">
+      <!-- شريط التقدم (الخطوة 3 - User Info) -->
+      <div class="mb-6 flex items-center" aria-hidden="true">
+        <span class="h-2 w-2 rotate-45 bg-blue-600"></span>
+        <div class="h-[1.5px] flex-1 bg-blue-600"></div>
+        <span class="h-2 w-2 rotate-45 bg-blue-600"></span>
+        <div class="h-[1.5px] flex-1 bg-blue-600"></div>
+        <span class="h-2.5 w-2.5 rotate-45 border-2 border-blue-600 bg-white"></span>
+        <div class="h-[1.5px] flex-1 border-t border-dashed border-blue-300"></div>
+        <span class="h-2 w-2 rotate-45 border border-blue-300 bg-white"></span>
+      </div>
+
+      <h2 class="text-[28px] font-bold tracking-tight text-slate-900">Create Account</h2>
+      <h3 class="mt-2 text-lg font-bold text-blue-600">Tell us more about you</h3>
+
+      <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <app-inputs
+          label="First name*"
+          type="text"
+          placeholder="Ahmed"
+          formControlName="firstName"
+          [errorMessage]="
+            userInfoForm.controls.firstName.touched && userInfoForm.controls.firstName.invalid
+              ? 'First name is required'
+              : ''
+          "
+        />
+
+        <app-inputs
+          label="Last name*"
+          type="text"
+          placeholder="Abdullah"
+          formControlName="lastName"
+          [errorMessage]="
+            userInfoForm.controls.lastName.touched && userInfoForm.controls.lastName.invalid
+              ? 'Last name is required'
+              : ''
+          "
+        />
+      </div>
+
+      <div class="mt-3">
+        <app-inputs
+          label="Username*"
+          type="text"
+          placeholder="user123"
+          formControlName="username"
+          [errorMessage]="
+            userInfoForm.controls.username.touched && userInfoForm.controls.username.invalid
+              ? 'Username is required (min 3 chars)'
+              : ''
+          "
+        />
+      </div>
+
+      <div class="mt-3 flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-slate-700">Phone</label>
+        <div
+          class="flex h-[42px] items-center overflow-hidden rounded-md border border-slate-200 bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-600/20"
+        >
+          <span
+            class="flex h-full items-center gap-1.5 border-e border-slate-200 bg-slate-50 px-3 text-xs font-medium text-slate-700"
+          >
+            <span>🇪🇬</span>
+            <span>(+20)</span>
+          </span>
+          <input
+            type="tel"
+            inputmode="numeric"
+            placeholder="1012345678"
+            formControlName="phone"
+            class="h-full w-full bg-transparent px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+          />
+        </div>
+        @if (userInfoForm.controls.phone.touched && userInfoForm.controls.phone.invalid) {
+          <span class="text-xs text-red-500">Please enter a valid phone number</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="userInfoForm.invalid"
+        class="mt-6 flex h-[44px] w-full cursor-pointer items-center justify-center gap-1 rounded-md border border-blue-200 bg-blue-50/80 text-sm font-semibold text-blue-600 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400"
+      >
+        <span>Next</span>
+        <span aria-hidden="true">&gt;</span>
+      </button>
+    </form>
+  } @else {
+    <form [formGroup]="passwordForm" (ngSubmit)="submitRegistration()" class="flex flex-col">
+      <!-- شريط التقدم (الخطوة 4 - Password) -->
+      <div class="mb-6 flex items-center" aria-hidden="true">
+        <span class="h-2 w-2 rotate-45 bg-blue-600"></span>
+        <div class="h-[1.5px] flex-1 bg-blue-600"></div>
+        <span class="h-2 w-2 rotate-45 bg-blue-600"></span>
+        <div class="h-[1.5px] flex-1 bg-blue-600"></div>
+        <span class="h-2 w-2 rotate-45 bg-blue-600"></span>
+        <div class="h-[1.5px] flex-1 bg-blue-600"></div>
+        <span class="h-2.5 w-2.5 rotate-45 border-2 border-blue-600 bg-white"></span>
+      </div>
+
+      <h2 class="text-[28px] font-bold tracking-tight text-slate-900">Create Account</h2>
+      <h3 class="mt-2 text-lg font-bold text-blue-600">Create a strong password</h3>
+
+      <div class="mt-4 flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-slate-700">Password*</label>
+        <div class="relative flex items-center">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            placeholder="••••••••"
+            formControlName="password"
+            class="h-[42px] w-full rounded-md border border-slate-200 bg-white pe-10 ps-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+          />
+          <button
+            type="button"
+            (click)="showPassword.update((v) => !v)"
+            aria-label="Toggle password visibility"
+            class="absolute end-2.5 cursor-pointer text-xs font-medium text-slate-400 hover:text-slate-600"
+          >
+            {{ showPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        @if (passwordForm.controls.password.touched && passwordForm.controls.password.invalid) {
+          <span class="text-xs text-red-500">Password must be at least 8 characters</span>
+        }
+      </div>
+
+      <div class="mt-3 flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-slate-700">Confirm Password*</label>
+        <div class="relative flex items-center">
+          <input
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            placeholder="••••••••"
+            formControlName="confirmPassword"
+            class="h-[42px] w-full rounded-md border border-slate-200 bg-white pe-10 ps-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600/20"
+          />
+          <button
+            type="button"
+            (click)="showConfirmPassword.update((v) => !v)"
+            aria-label="Toggle confirm password visibility"
+            class="absolute end-2.5 cursor-pointer text-xs font-medium text-slate-400 hover:text-slate-600"
+          >
+            {{ showConfirmPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        @if (
+          passwordForm.controls.confirmPassword.touched &&
+          (passwordForm.controls.confirmPassword.invalid || passwordForm.hasError('passwordMismatch'))
+        ) {
+          <span class="text-xs text-red-500">Passwords must match</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="passwordForm.invalid"
+        class="mt-6 flex h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-blue-600 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+      >
+        Create Account
+      </button>
+    </form>
+  }
+</div>

@@ -6,6 +6,10 @@ export const appRoutes: Route[] = [
     redirectTo: 'products',
     pathMatch: 'full',
   },
+   {
+    path: 'auth',
+    loadChildren: () => import('./shared/components/auth/auth.routes').then((m) => m.authRoutes),
+  },
   {
     path: 'products',
     loadChildren: () =>
@@ -18,6 +22,7 @@ export const appRoutes: Route[] = [
         (m) => m.featureProductDetailRoutes,
       ),
   },
+ 
   {
     path: '**',
     redirectTo: 'products',

@@ -1,0 +1,56 @@
+<form
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  class="flex w-full max-w-[452px] flex-col gap-3"
+>
+  <h2 class="mb-1 text-2xl font-bold text-slate-900">Login</h2>
+
+
+  <app-inputs
+    label="Username"
+    type="text"
+    placeholder="user123"
+    formControlName="username"
+    [errorMessage]="
+      submitted() && form.controls.username.invalid ? 'Your username is required' : ''
+    "
+  />
+
+  <app-inputs
+    label="Password"
+    type="password"
+    placeholder="••••••••"
+    formControlName="password"
+    [errorMessage]="
+      submitted() && form.controls.password.invalid ? 'Your password is required' : ''
+    "
+  />
+
+  <div class="flex justify-end text-xs">
+    <a routerLink="/auth/forgot-password" class="font-medium text-blue-600 hover:underline">
+      Forgot your password?
+    </a>
+  </div>
+    @if (serverError()) {
+    <div
+      class="rounded-md border border-red-200 bg-red-50 px-3 py-2.5 text-center text-sm font-medium text-red-700"
+    >
+      {{ serverError() }}
+    </div>
+  }
+
+
+  <button
+    type="submit"
+    class="mt-1 h-[44px] w-full cursor-pointer rounded-md bg-blue-600 text-sm font-semibold text-white transition hover:bg-blue-700"
+  >
+    Login
+  </button>
+
+  <p class="mt-2 text-center text-xs text-slate-600">
+    Don't have an account?
+    <a routerLink="/auth/register" class="font-medium text-blue-600 hover:underline">
+      Create yours
+    </a>
+  </p>
+</form>

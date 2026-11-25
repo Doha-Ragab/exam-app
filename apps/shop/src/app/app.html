@@ -1,19 +1,11 @@
-<header class="app-header">
-  <div class="container">
-    <h1>{{ title }}</h1>
-    <nav>
-      <a routerLink="/products" routerLinkActive="active">Products</a>
-    </nav>
+<section class="grid min-h-screen w-full grid-cols-1 lg:grid-cols-2">
+  <div class="auth-left flex flex-col justify-center">
+    <app-register-side-panel />
   </div>
-</header>
 
-<main class="app-main">
-  <router-outlet></router-outlet>
-</main>
-
-<footer class="app-footer">
-  <div class="container">
-    <p>© 2025 Nx Shop Demo - Showcasing Nx Monorepo Features</p>
-    <p>Frontend (Angular) + Backend (Express) + Shared Libraries</p>
-  </div>
-</footer>
+  <main class="auth-right flex items-center justify-center bg-white p-6 lg:p-12">
+    <div class="auth-card w-full max-w-[452px]">
+    <router-outlet></router-outlet>
+    </div>
+  </main>
+</section>

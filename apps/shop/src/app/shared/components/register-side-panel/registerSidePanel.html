@@ -1,0 +1,26 @@
+<aside
+  class="flex min-h-screen flex-col justify-center bg-gradient-to-br from-blue-50 via-blue-100/70 to-blue-50 p-10 text-slate-900"
+>
+  <div class="mb-10 flex items-center gap-2 font-bold text-blue-600">
+    <span aria-hidden="true">📘</span>
+    <span>{{ brandName() }}</span>
+  </div>
+
+  <h1 class="mb-8 max-w-md text-3xl font-bold leading-snug text-slate-900">
+    {{ headline() }}
+  </h1>
+
+  <ul class="space-y-5">
+    @for (item of features(); track item.title) {
+      <li class="flex items-start gap-3.5">
+        <span class="mt-0.5 text-lg" aria-hidden="true">{{ item.icon }}</span>
+        <div>
+          <h2 class="text-sm font-semibold text-blue-600">{{ item.title }}</h2>
+          <p class="mt-1 max-w-sm text-sm leading-relaxed text-slate-600">
+            {{ item.description }}
+          </p>
+        </div>
+      </li>
+    }
+  </ul>
+</aside>
